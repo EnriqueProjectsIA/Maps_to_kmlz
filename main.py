@@ -7,7 +7,7 @@ import warnings
 from termcolor import colored
 
 
-def parse_to_text_to_float(input:List[str])->List[float]:
+def parse_from_text_to_float(input:List[str])->List[float]:
     """
     Parse a list of strings to a list of integers.
 
@@ -68,7 +68,7 @@ def parse_kml(kml_path, use_logger:bool = False)->Dict[str, Dict[str, List[float
             if use_logger:
                 logger_object.info(f"Point of Interest: {name}, Coordinates: {point.text.strip()}")
             try:
-                output_dict['points'][name] = [float(i) for i in point.text.strip().split(',')][:-1]
+                output_dict['points'][name] = [float(i) for i in point.text.strip().split(',')][:-1] #Remove the altitude
             except Exception as e:
                 if use_logger:
                     logger_object.error(f"Error while parsing coordinates for {name}: {e}")
@@ -80,7 +80,7 @@ def parse_kml(kml_path, use_logger:bool = False)->Dict[str, Dict[str, List[float
             if use_logger:
                 logger_object.info(f"Line: {name}, Coordinates: {line.text.strip()}")
             try:
-                output_dict['route'][name] = [parse_to_text_to_float(i.strip().split(',')[:-1]) for i in line.text.strip().split('\n')]
+                output_dict['route'][name] = [parse_from_text_to_float(i.strip().split(',')[:-1]) for i in line.text.strip().split('\n')] #Remove the altitude
             except Exception as e:
                 if use_logger:
                     logger_object.error(f"Error while parsing coordinates for {name}: {e}")
