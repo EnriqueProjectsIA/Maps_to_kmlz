@@ -2,3 +2,4 @@ venv_kmlz/
 __pyche__/
 input_data/*
 output_data/*
+logs/*
