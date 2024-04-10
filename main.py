@@ -2,6 +2,9 @@ import xml.etree.ElementTree as ET
 from pathlib import Path
 from typing import Dict, List
 import logger
+from datetime import datetime as dt
+import warnings
+from termcolor import colored
 
 
 def parse_to_text_to_float(input:List[str])->List[float]:
@@ -47,7 +50,8 @@ def parse_kml(kml_path, use_logger:bool = False)->Dict[str, Dict[str, List[float
         file_name = str(Path(kml_path).name).split('.')[0]
         path = Path(__file__).parent / "logs"
         path.mkdir(exist_ok=True)
-        path = path / f"{file_name}.log"
+        now = dt.now().strftime("%Y-%m-%d_%H-%M-%S")
+        path = path / f"{now}_{file_name}.log"
         logger_object = logger.configure_logger(name = file_name, path=path)
 
     # Namespace used in KML files
@@ -67,14 +71,24 @@ def parse_kml(kml_path, use_logger:bool = False)->Dict[str, Dict[str, List[float
         if point is not None:
             if use_logger:
                 logger_object.info(f"Point of Interest: {name}, Coordinates: {point.text.strip()}")
-            print(f"Point of Interest: {name}, Coordinates: {point.text.strip()}")
-            output_dict['points'][name] = [float(i) for i in point.text.strip().split(',')][:-1]
+            try:
+                output_dict['points'][name] = [float(i) for i in point.text.strip().split(',')][:-1]
+            except Exception as e:
+                if use_logger:
+                    logger_object.error(f"Error while parsing coordinates for {name}: {e}")
+                warnings.warn(colored(f"Error while parsing coordinates for {name}: {e}", "red"))
             continue
         # Check for Lines
         line = pm.find('.//kml:LineString/kml:coordinates', ns)
         if line is not None:
-            print(f"Line: {name}, Coordinates: {line.text.strip()}")
-            output_dict['route'][name] = [parse_to_text_to_float(i.strip().split(',')[:-1]) for i in line.text.strip().split('\n')]
+            if use_logger:
+                logger_object.info(f"Line: {name}, Coordinates: {line.text.strip()}")
+            try:
+                output_dict['route'][name] = [parse_to_text_to_float(i.strip().split(',')[:-1]) for i in line.text.strip().split('\n')]
+            except Exception as e:
+                if use_logger:
+                    logger_object.error(f"Error while parsing coordinates for {name}: {e}")
+                warnings.warn(colored(f"Error while parsing coordinates for {name}: {e}", "red"))
     return output_dict
 
 def transform_dict_to_csvs(input:Dict, target_key:str = 'route', output_directory:str|None = None)->None:
