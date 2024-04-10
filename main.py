@@ -39,10 +39,6 @@ def parse_kml(kml_path, use_logger:bool = False)->Dict[str, Dict[str, List[float
     Parses a KML file to extract information about points of interest and lines,
     including names and coordinates, using xml.etree.ElementTree.
 
-    Note: xml.etree.ElementTree is not secure against maliciously constructed data.
-    Ensure the input data is from a trusted source. If handling data from untrusted
-    sources, consider additional security measures or using a more secure library.
-
     :param kml_path: Path to the KML file.
     :return: None
     """
@@ -115,7 +111,7 @@ def transform_dict_to_csvs(input:Dict, target_key:str = 'route', output_director
             for item in value:
                 f.write(f"{parse_list_float_to_str(item)}\n")
 
-def wrapper(path_to_directory:str|None = None, file_name:str|None = None, use_logger:bool = False):
+def wrapper(path_to_directory:str|None = None, file_name:str|None = None, use_logger:bool = False)->None:
     """
     Wrapper function to parse a KML file and transform the output to CSV files.
 
