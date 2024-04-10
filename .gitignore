@@ -1,5 +1,5 @@
 venv_kmlz/
-__pyche__/
+__pycache__/
 input_data/*
 output_data/*
 logs/*
