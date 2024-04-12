@@ -80,7 +80,7 @@ def parse_kml(kml_path, use_logger:bool = False)->Dict[str, Dict[str, List[float
             if use_logger:
                 logger_object.info(f"Line: {name}, Coordinates: {line.text.strip()}")
             try:
-                output_dict['route'][name] = [parse_from_text_to_float(i.strip().split(',')[:-1]) for i in line.text.strip().split('\n')] #Remove the altitude
+                output_dict['route'][name] = [parse_from_text_to_float(i.strip().split(',')[:-1][::-1]) for i in line.text.strip().split('\n')] #Remove the altitude
             except Exception as e:
                 if use_logger:
                     logger_object.error(f"Error while parsing coordinates for {name}: {e}")
